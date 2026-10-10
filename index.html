@@ -1,0 +1,213 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pixel Bouquet 💐</title>
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: #ffe8f0;
+  font-family: monospace;
+}
+
+.card {
+  text-align: center;
+  padding: 18px;
+  background: #fff9fc;
+  border: 4px solid #f5b7ce;
+  box-shadow: 8px 8px 0 #e9a0bc;
+  width: min(92vw, 440px);
+}
+
+h2 {
+  color: #d45587;
+  font-size: 21px;
+  margin: 4px 0 12px;
+}
+
+canvas {
+  width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+  display: block;
+}
+
+p {
+  color: #bd6289;
+  font-size: 13px;
+}
+
+button {
+  background: #f28bb2;
+  color: white;
+  border: 0;
+  padding: 10px 18px;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 3px 3px #d65e91;
+}
+button:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px #d65e91;
+}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h2>♡ For You 3shan msh haterdy ta5dehom (: ♡</h2>
+  <canvas id="art" width="120" height="145"></canvas>
+  <p>3o2bal 1000000000000 sana (: 🌸</p>
+  <button id="gift"> here ♥</button>
+</div>
+
+<script>
+const c = document.getElementById("art");
+const ctx = c.getContext("2d");
+ctx.imageSmoothingEnabled = false;
+
+let time = 0;
+let extraHearts = [];
+let message = false;
+
+const flowers = [
+  {x:29,y:30,color:"#f05b91",light:"#ffabc9",dark:"#a52f62"},
+  {x:59,y:17,color:"#e8497c",light:"#ff9fc0",dark:"#9d2858"},
+  {x:89,y:30,color:"#fa80a8",light:"#ffc1d5",dark:"#bb3e71"},
+  {x:42,y:47,color:"#a87bdb",light:"#d7b7fa",dark:"#74449f"},
+  {x:75,y:47,color:"#ff91ae",light:"#ffd0dc",dark:"#bd4b77"}
+];
+
+function px(x,y,color,s=4) {
+  ctx.fillStyle = color;
+  ctx.fillRect(Math.round(x),Math.round(y),s,s);
+}
+
+function flower(f) {
+  const petals = [
+    [-8,-8],[0,-12],[8,-8],
+    [-12,0],[0,0],[12,0],
+    [-8,8],[0,8],[8,8]
+  ];
+
+  petals.forEach(([dx,dy],i) => {
+    px(f.x+dx,f.y+dy,
+      i%3===0 ? f.light : f.color,8);
+  });
+
+  px(f.x,f.y,f.dark,8);
+  px(f.x+4,f.y+4,"#ffdc77",4);
+  px(f.x-4,f.y-4,"#fff0f5",4);
+}
+
+function draw() {
+  ctx.clearRect(0,0,120,145);
+
+  // خلفية كريمية
+  ctx.fillStyle="#fff8f3";
+  ctx.fillRect(0,0,120,145);
+
+  // نجوم صغيرة
+  for(let i=0;i<12;i++){
+    const x=(i*29+9)%116;
+    const y=(i*37+12)%130;
+    px(x,y,i%2?"#ffd1df":"#f8b6d0",2);
+  }
+
+  // السيقان
+  flowers.forEach((f,i)=>{
+    const sway=Math.sin(time/15+i)*2;
+    for(let y=f.y+12;y<88;y+=4){
+      px(f.x+sway+(y>65?2:0),y,"#43845c",4);
+    }
+  });
+
+  // الأوراق
+  [
+    [22,59],[30,67],[39,63],[47,70],
+    [57,61],[65,70],[76,64],[85,59],
+    [80,76],[34,77],[54,75]
+  ].forEach(([x,y],i)=>{
+    px(x,y,i%2?"#72b76b":"#398253",8);
+    px(x+4,y-4,"#9bd985",4);
+  });
+
+  // الزهور تتحرك بخفة
+  flowers.forEach((f,i)=>{
+    const sway=Math.sin(time/15+i)*1.5;
+    flower({...f,x:f.x+sway});
+  });
+
+  // ورق التغليف
+  px(29,76,"#c9a0e8",8);
+  px(37,80,"#dfc3f5",8);
+  px(45,84,"#c9a0e8",8);
+  px(53,80,"#dfc3f5",8);
+  px(61,76,"#c9a0e8",8);
+
+  px(33,84,"#b98cdb",8);
+  px(41,88,"#d8b8f0",8);
+  px(49,88,"#c9a0e8",8);
+  px(57,84,"#b98cdb",8);
+
+  // أسفل الغلاف
+  for(let i=0;i<7;i++){
+    px(34+i*4,92+i*3,"#c9a0e8",4);
+  }
+
+  // شريطة وردية
+  px(42,82,"#ff5e98",8);
+  px(50,82,"#ff9cbd",8);
+  px(38,86,"#ec4b86",4);
+  px(54,86,"#ec4b86",4);
+  px(46,78,"#ff5e98",4);
+
+  // قلوب طائرة
+  extraHearts.forEach(h=>{
+    px(h.x,h.y,"#f05a91",4);
+    px(h.x+4,h.y-4,"#f05a91",4);
+    px(h.x+8,h.y,"#f05a91",4);
+    px(h.x+4,h.y+4,"#f05a91",4);
+    h.y-=0.35;
+    h.x+=Math.sin(time/8+h.phase)*0.2;
+    h.life--;
+  });
+
+  extraHearts=extraHearts.filter(h=>h.life>0);
+
+  // لمعة حول البوكيه
+  if(Math.floor(time/20)%2===0){
+    px(14,43,"#ffd66b",3);
+    px(101,57,"#ffd66b",3);
+    px(98,17,"#ffd66b",3);
+  }
+
+  time++;
+  requestAnimationFrame(draw);
+}
+
+document.getElementById("gift").addEventListener("click",()=>{
+  message=true;
+  for(let i=0;i<15;i++){
+    extraHearts.push({
+      x:20+Math.random()*80,
+      y:55+Math.random()*45,
+      life:100,
+      phase:Math.random()*6
+    });
+  }
+  document.querySelector("h2").textContent="Happy Birthday AREEEJ!";
+});
+
+draw();
+</script>
+</body>
+</html>
